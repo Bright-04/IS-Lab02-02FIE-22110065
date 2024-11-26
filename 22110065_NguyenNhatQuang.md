@@ -1,19 +1,20 @@
 # IS-Lab02-02FIE-22110065
 # Task 1: Public-key based authentication 
 **Question 1**: 
-Implement public-key based authentication step-by-step with openssl according the following scheme.
+Two Docker containers were established: `userver` and `uclient`, creating a controlled network environment for the authentication experiment.
+
 ![alt text](image-1.png)
 
 **Answer 1**:
 
 ## Step 1: Preparing the environment
 ### 1.1. Create docker VMs
-I have created 2 docker container named userver and uclient.
+ began by setting up two Docker containers - `userver` and `uclient`.
 
 ![image](/img/2.0.png)
 
 ### 1.2. Install nessesary packages
-Then, on both machine, install the nessesary packages:
+The following packages were systematically installed on both machines to support the authentication process:
 
 Using this command: `apt update && apt install openssl netcat-traditional net-tools xxd`
 
@@ -23,11 +24,13 @@ Using this command: `apt update && apt install openssl netcat-traditional net-to
 3. `net-tools`: To use the command `ifconfig` to see the IP address of the machine.
 4. `xxd`: To inspect hex values from binary files
 
+*Note: While 512-bit encryption was selected for educational purposes, it is acknowledged that this key length is insufficient for production security environments.*
+
 
 ## Step 2: Create client's private and public keys
 ### 2.1. Create private key
 
-I used RSA to encrypt the private key, with the length of 512 bits for faster computational speed, but unrealistic in real life usage.
+A 512-bit RSA private key was generated using the following command:
 
 Command: `openssl genrsa -out client_private.pem 512`
 
@@ -43,7 +46,7 @@ The private key is saved in file named `client_private.pem`
 
 ### 2.2. Create public key
 
-From the private key, we can generate the public key using the following command:
+The public key was extracted from the private key using:
 
 ```
 openssl rsa -in client_private.pem -pubout -out client_public.pem
@@ -83,11 +86,11 @@ Now, the client_public is now on the server machine
 
 ![image](/img/2.6.png)
 
-We can see that the public key is the same on both machine. The public key is sent successfully.
+Result: The public key is sent successfully.
 
 ## Step 3: Encrypt the message
 
-First, create a `challenge.txt` file
+First, I create a common `challenge.txt` file
 ```
 echo "Hello from the server" > challenge.txt
 ```
@@ -101,9 +104,9 @@ The command will use RSA to encrypt the file `challenge.txt` using the public ke
 
 ![image](img/2.7.png)
 
-## Step 4: Send the encrypted message to the client.
+## Step 3: Send the encrypted message to the client.
 
-The server will send the encrypted message to the client's address, which also changed half-way during the lab.
+The public key was securely transmitted between machines using `netcat`, demonstrating a fundamental principle of public-key infrastructure (PKI).
 
 First, the client must be listening on port 4445, then the server can send the file.
 
@@ -116,7 +119,7 @@ The client now have the encrypted challenge file:
 
 ## Step 4: Decrypt the challenge
 
-Using the decrypt command:
+The encrypted challenge was decrypted using the client's private key:
 ```
 openssl pkeyutl -decrypt -inkey client_private.pem -in challenge.enc -out decrypted_challenge.txt
 ```
@@ -127,7 +130,7 @@ The command is used to decrypt the encrypted `challenge.enc` using the client's 
 
 ## Step 5: Sign the challenge using client's private key
 
-I will use -sha256 to create the signature to sign using client's private key. The result is saved to `signed_challenge.bin`.
+A digital signature was generated to authenticate the decrypted challenge:
 ```
 openssl dgst -sha256 -sign client_private.pem -out signed_challenge.bin decrypted_challenge.txt
 ```
@@ -138,6 +141,7 @@ openssl dgst -sha256 -sign client_private.pem -out signed_challenge.bin decrypte
 
 
 ## Step 7: Verify the signature
+The signature was verified using the public key:
 
 ```
 openssl dgst -sha256 -verify client_public.pem -signature signed_challenge.bin challenge.txt
