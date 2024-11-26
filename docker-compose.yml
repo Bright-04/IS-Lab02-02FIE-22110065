@@ -1,0 +1,22 @@
+# docker-compose.yml
+version: '3'
+services:
+  ubuntu1:
+    image: ubuntu:latest
+    container_name: userver
+    command: tail -f /dev/null  # Keeps container running
+    networks:
+      - ubuntu-net
+    tty: true
+
+  ubuntu2:
+    image: ubuntu:latest
+    container_name: uclient
+    command: tail -f /dev/null  # Keeps container running
+    networks:
+      - ubuntu-net
+    tty: true
+
+networks:
+  ubuntu-net:
+    driver: bridge
