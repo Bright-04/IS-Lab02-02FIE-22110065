@@ -8,12 +8,10 @@ Two Docker containers were established: `userver` and `uclient`, creating a cont
 **Answer 1**:
 
 ## Step 1: Preparing the environment
-### 1.1. Create docker VMs
  began by setting up two Docker containers - `userver` and `uclient`.
 
 ![image](/img/2.0.png)
 
-### 1.2. Install nessesary packages
 The following packages were systematically installed on both machines to support the authentication process:
 
 Using this command: `apt update && apt install openssl netcat-traditional net-tools xxd`
@@ -104,7 +102,7 @@ The command will use RSA to encrypt the file `challenge.txt` using the public ke
 
 ![image](img/2.7.png)
 
-## Step 3: Send the encrypted message to the client.
+## Step 4: Send the encrypted message to the client.
 
 The public key was securely transmitted between machines using `netcat`, demonstrating a fundamental principle of public-key infrastructure (PKI).
 
@@ -117,7 +115,7 @@ The client now have the encrypted challenge file:
 ![image](/img/2.9.png)
 
 
-## Step 4: Decrypt the challenge
+## Step 5: Decrypt the challenge
 
 The encrypted challenge was decrypted using the client's private key:
 ```
@@ -128,14 +126,14 @@ The command is used to decrypt the encrypted `challenge.enc` using the client's 
  
 ![image](/img/3.0.png)
 
-## Step 5: Sign the challenge using client's private key
+## Step 6: Sign the challenge using client's private key
 
 A digital signature was generated to authenticate the decrypted challenge:
 ```
 openssl dgst -sha256 -sign client_private.pem -out signed_challenge.bin decrypted_challenge.txt
 ```
 
-## Step 6: Send the signature back to the server
+## Step 7: Send the signature back to the server
 
 ![image](/img/3.1.png)
 
@@ -158,7 +156,7 @@ Explain the command:
 
 The file is now verifed.
 
-**Conclusion:** I have successfully implemented public-key based authentication step-by-step with `openssl`.
+**Conclusion:** The laboratory exercise successfully demonstrated the technical implementation of public-key based authentication, providing practical insights into cryptographic communication principles.
 
 
 
